@@ -6,7 +6,7 @@ namespace Assets.Scripts.Physics
     public class CircleCollider : MonoBehaviour
     {
         // The radius of the circle
-        public float Radius;
+        public float Radius = 1;
 
         // The local offset of the collider
         public Vector2 Position;

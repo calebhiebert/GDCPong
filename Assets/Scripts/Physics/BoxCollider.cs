@@ -11,7 +11,7 @@ namespace Assets.Scripts.Physics
     {
 
         // the size of the box in world units
-        public Vector2 Size;
+        public Vector2 Size = Vector2.one;
 
         // the local positional offset
         public Vector2 Position;

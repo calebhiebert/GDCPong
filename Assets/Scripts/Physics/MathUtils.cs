@@ -1,0 +1,96 @@
+﻿using UnityEngine;
+
+namespace Assets.Scripts.Physics
+{
+    /// <summary>
+    /// This class contains methods to help with angle computations
+    /// </summary>
+    public class MathUtils
+    {
+        /// <summary>
+        /// Calculates the angle (in degrees) that this vector represents
+        /// </summary>
+        /// <param name="vector">The vector to convert</param>
+        /// <returns>An angle in degrees</returns>
+        public static float VectorToAngle(Vector2 vector)
+        {
+            // normalize this vector
+            // this changes the vector so that all of its values add up to 1
+            var normalized = vector.normalized;
+
+            // get the angle in radians
+            // convert the angle to degrees
+            // subtract 90 to align with unity coordinates
+            var angle = Mathf.Atan2(normalized.y, normalized.x)*Mathf.Rad2Deg - 90;
+
+            return angle;
+        }
+
+        /// <summary>
+        /// Converts an angle to a heading vector
+        /// For example, 90 degrees would be converted to (1, 0)
+        /// </summary>
+        /// <param name="angle">An angle in degrees</param>
+        /// <returns>A vector representing the input angle</returns>
+        public static Vector2 AngleToVector(float angle)
+        {
+            // convert the angle into radians
+            var radians = (angle + 90)*Mathf.Deg2Rad;
+
+            var headingVector = new Vector2();
+
+            headingVector.x = Mathf.Cos(radians);
+
+            headingVector.y = Mathf.Sin(radians);
+
+            return headingVector;
+        }
+
+        /// <summary>
+        /// Rotates a point around an origin point
+        /// </summary>
+        /// <param name="point">The point to rotate</param>
+        /// <param name="angle">The number of degrees to rotate this point by</param>
+        /// <param name="origin">The origin to rotate the point around</param>
+        /// <returns>The rotated point</returns>
+        public static Vector2 RotatePoint(Vector2 point, float angle, Vector2 origin)
+        {
+            var sin = Mathf.Sin((angle * -1) * Mathf.Deg2Rad);
+            var cos = Mathf.Cos((angle * -1) * Mathf.Deg2Rad);
+
+            var p = new Vector2(point.x - origin.x, point.y - origin.y);
+
+            var rotatedPoint = new Vector2(p.x * cos - p.y * sin, p.x * sin + p.y * cos);
+
+            rotatedPoint.x += origin.x;
+            rotatedPoint.y += origin.y;
+
+            return rotatedPoint;
+        }
+
+        public static Vector2 LineIntersectionPoint(Vector2 a1, Vector2 b1, Vector2 a2, Vector2 b2)
+        {
+            // Get A,B,C of first line - points : a1 to b1
+            float A1 = b1.y - a1.y;
+            float B1 = a1.x - b1.x;
+            float C1 = A1 * a1.x + B1 * a1.y;
+
+            // Get A,B,C of second line - points : a2 to b2
+            float A2 = b2.y - a2.y;
+            float B2 = a2.x - b2.x;
+            float C2 = A2 * a2.x + B2 * a2.y;
+
+            // Get delta and check if the lines are parallel
+            float delta = A1 * B2 - A2 * B1;
+
+            if (delta == 0)
+                throw new System.Exception("Lines are parallel");
+
+            // now return the Vector2 intersection point
+            return new Vector2(
+                (B2 * C1 - B1 * C2) / delta,
+                (A1 * C2 - A2 * C1) / delta
+            );
+        }
+    }
+}
