@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.Physics
 {
@@ -23,7 +22,12 @@ namespace Assets.Scripts.Physics
         /// </summary>
         void OnDrawGizmos()
         {
+            // draw a square in the editor
             Gizmos.DrawWireCube((Vector2)transform.position + Position, Size);
+
+            // draw a line from the origin of the object, to the collider's center
+            // this makes it easier to see the square's offset
+            Gizmos.DrawLine(transform.position, (Vector2)transform.position + Position);
         }
 
         /// <summary>
