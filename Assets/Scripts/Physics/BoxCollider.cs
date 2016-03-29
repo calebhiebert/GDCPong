@@ -42,5 +42,41 @@ namespace Assets.Scripts.Physics
                    point.y > transform.position.x + Position.y - Size.y/2 &&
                    point.y < transform.position.x + Position.y + Size.y/2;
         }
+
+        /// <summary>
+        /// Gets the unrotated corner points of this box collider
+        /// </summary>
+        /// <returns>An array of points in the format: [top right, top left, bottom right, bottom left]</returns>
+        public Vector2[] GetPoints()
+        {
+            var points = new Vector2[4];
+
+            // top right point
+            points[0] = new Vector2(
+                transform.position.x + Position.x - Size.x/2, 
+                transform.position.y + Position.y + Size.y/2
+                );
+
+            // top left point
+            points[1] = new Vector2(
+                transform.position.x + Position.x + Size.x / 2,
+                transform.position.y + Position.y + Size.y / 2
+                );
+
+
+            // bottom right point
+            points[2] = new Vector2(
+                transform.position.x + Position.x - Size.x / 2,
+                transform.position.y + Position.y - Size.y / 2
+                );
+
+            // bottom left point
+            points[3] = new Vector2(
+                transform.position.x + Position.x + Size.x / 2,
+                transform.position.y + Position.y - Size.y / 2
+                );
+
+            return points;
+        }
     }
 }

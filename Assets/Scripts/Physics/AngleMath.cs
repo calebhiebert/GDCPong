@@ -44,5 +44,15 @@ namespace Assets.Scripts.Physics
 
             return headingVector;
         }
+
+        public Vector2 RotatePoint(Vector2 point, float angle, Vector2 origin)
+        {
+            var sin = Mathf.Sin(angle*Mathf.Deg2Rad);
+            var cos = Mathf.Cos(angle*Mathf.Deg2Rad);
+
+            // TODO impliment proper calculations
+
+            return Vector2.zero;
+        }
     }
 }
