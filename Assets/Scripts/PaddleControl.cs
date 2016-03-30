@@ -2,9 +2,13 @@
 
 namespace Assets.Scripts
 {
+    /// <summary>
+    /// This script goes on the paddle GameObject
+    /// It allows a player to move the paddle around based on up and down inputs
+    /// It also allows the paddle to be controlled by the computer
+    /// </summary>
     public class PaddleControl : MonoBehaviour
     {
-
         // how fast the paddle will move
         public float Speed;
 
@@ -28,6 +32,7 @@ namespace Assets.Scripts
         void Start()
         {
             // get the ball object
+            // this is used for ai paddles only
             _ball = GameObject.FindGameObjectWithTag("Ball");
         }
 
@@ -43,20 +48,27 @@ namespace Assets.Scripts
             }
             else
             {
-                // move the paddle based on the position of the ball
+                // get the y position of the ball
                 var ballY = _ball.transform.position.y;
 
+                // create a movement axis based on the ball's y position
                 var axis = 0.0f;
 
+                // if the paddle is below the ball
                 if (ballY > transform.position.y)
                 {
+                    // set the axis to 'up'
                     axis = 1.0f;
                 }
+
+                // if the paddle is above the ball
                 else if (ballY < transform.position.y)
                 {
+                    // set the axis to 'down'
                     axis = -1.0f;
                 }
 
+                // Move the paddle and set the new position
                 transform.position = Move(Time.deltaTime, transform.position, axis);
             }
         }
@@ -66,8 +78,7 @@ namespace Assets.Scripts
         /// </summary>
         /// <param name="timePassed">The amount of time in seconds since the last update</param>
         /// <param name="currentPosition">The current position of the paddle</param>
-        /// <param name="up">If the user is pressing the up key</param>
-        /// <param name="down">If the user is pressing the down key</param>
+        /// <param name="movementAxis">The axis of player inputs, 1 for up, -1 for down</param>
         /// <returns>The new calculated position</returns>
         Vector2 Move(float timePassed, Vector2 currentPosition, float movementAxis)
         {

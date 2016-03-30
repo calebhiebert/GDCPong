@@ -2,6 +2,11 @@
 
 namespace Assets.Scripts
 {
+    /// <summary>
+    /// This script goes on the ball GameObject
+    /// It handles moving of the ball
+    /// It also handles ball collision and bounce angles
+    /// </summary>
     public class BallControl : MonoBehaviour
     {
         [SerializeField]
