@@ -9,8 +9,11 @@ namespace Assets.Scripts
     /// </summary>
     public class BallControl : MonoBehaviour
     {
-        [SerializeField]
-        private Vector2 _velocity;
+        [SerializeField] private Vector2 _velocity;
+
+        [SerializeField] private float _speedIncrease;
+
+        [SerializeField] private AnimationCurve _reflectCurve;
 
         // the unity physics rigidbody for this ball
         private Rigidbody2D _rigidBody;
@@ -38,6 +41,8 @@ namespace Assets.Scripts
         void OnCollisionEnter2D(Collision2D other)
         {
             _velocity = ReflectVelocity(other.gameObject) * -1;
+
+            _velocity *= _speedIncrease + 1;
         }
 
         /// <summary>

@@ -92,6 +92,10 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 11446346, guid: de652e06f2084f04099ea370b4a0ec12, type: 2}
+      propertyPath: _reflectCurve.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 433070, guid: de652e06f2084f04099ea370b4a0ec12, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -122,6 +126,38 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 433070, guid: de652e06f2084f04099ea370b4a0ec12, type: 2}
       propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11446346, guid: de652e06f2084f04099ea370b4a0ec12, type: 2}
+      propertyPath: _speedIncrease
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 11446346, guid: de652e06f2084f04099ea370b4a0ec12, type: 2}
+      propertyPath: _reflectCurve.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11446346, guid: de652e06f2084f04099ea370b4a0ec12, type: 2}
+      propertyPath: _reflectCurve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11446346, guid: de652e06f2084f04099ea370b4a0ec12, type: 2}
+      propertyPath: _reflectCurve.m_Curve.Array.data[1].inSlope
+      value: 2.942308
+      objectReference: {fileID: 0}
+    - target: {fileID: 11446346, guid: de652e06f2084f04099ea370b4a0ec12, type: 2}
+      propertyPath: _reflectCurve.m_Curve.Array.data[1].outSlope
+      value: 2.942308
+      objectReference: {fileID: 0}
+    - target: {fileID: 11446346, guid: de652e06f2084f04099ea370b4a0ec12, type: 2}
+      propertyPath: _reflectCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11446346, guid: de652e06f2084f04099ea370b4a0ec12, type: 2}
+      propertyPath: _velocity.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11446346, guid: de652e06f2084f04099ea370b4a0ec12, type: 2}
+      propertyPath: _velocity.y
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -173,6 +209,14 @@ Prefab:
     - target: {fileID: 11477526, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
       propertyPath: AxisName
       value: Player1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11477526, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
+      propertyPath: ComputerControlled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11477526, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
+      propertyPath: Speed
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
@@ -459,6 +503,14 @@ Prefab:
     - target: {fileID: 100130, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
       propertyPath: m_Name
       value: PaddleR
+      objectReference: {fileID: 0}
+    - target: {fileID: 11477526, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
+      propertyPath: ComputerControlled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11477526, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
+      propertyPath: Speed
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
