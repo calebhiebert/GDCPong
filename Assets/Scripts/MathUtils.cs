@@ -3,7 +3,7 @@
 namespace Assets.Scripts
 {
     /// <summary>
-    /// This class contains methods to help with angle computations
+    /// This class contains methods to help with math stuff
     /// </summary>
     public class MathUtils
     {
@@ -14,13 +14,13 @@ namespace Assets.Scripts
         /// <returns>An angle in degrees</returns>
         public static float VectorToAngle(Vector2 vector)
         {
-            // normalize this vector
-            // this changes the vector so that all of its values add up to 1
+            // Normalize this vector
+            // This changes the vector so that all of its values add up to 1
             var normalized = vector.normalized;
 
-            // get the angle in radians
-            // convert the angle to degrees
-            // subtract 90 to align with unity coordinates
+            // Get the angle in radians
+            // Convert the angle to degrees
+            // Subtract 90 to align with unity coordinates
             var angle = Mathf.Atan2(normalized.y, normalized.x)*Mathf.Rad2Deg - 90;
 
             return angle;
@@ -34,7 +34,7 @@ namespace Assets.Scripts
         /// <returns>A vector representing the input angle</returns>
         public static Vector2 AngleToVector(float angle)
         {
-            // convert the angle into radians
+            // Convert the angle into radians
             var radians = (angle + 90)*Mathf.Deg2Rad;
 
             var headingVector = new Vector2();
@@ -94,7 +94,7 @@ namespace Assets.Scripts
             if (delta == 0)
                 throw new System.Exception("Lines are parallel");
 
-            // now return the Vector2 intersection point
+            // Return the Vector2 intersection point
             return new Vector2(
                 (B2 * C1 - B1 * C2) / delta,
                 (A1 * C2 - A2 * C1) / delta
