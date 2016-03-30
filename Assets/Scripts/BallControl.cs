@@ -9,10 +9,15 @@ namespace Assets.Scripts
     /// </summary>
     public class BallControl : MonoBehaviour
     {
+        // The speed the ball will move (in unity-units per second)
         [SerializeField] private Vector2 _velocity;
 
+        // The ball's velocity will be increased by this amount every time it hits a paddle
         [SerializeField] private float _speedIncrease;
 
+        // The amount of curve to be added to the ball
+        // Relative to its distance from the center of a paddle
+        // This is not yet functional
         [SerializeField] private AnimationCurve _reflectCurve;
 
         // the unity physics rigidbody for this ball
@@ -52,6 +57,8 @@ namespace Assets.Scripts
         /// <returns>The new velocity angle</returns>
         Vector2 ReflectVelocity(GameObject bounceObject)
         {
+            // TODO make the reflect angle dynamic instead of hard coded
+
             if(bounceObject.tag == "Paddle")
             {
                 return Vector2.Reflect(_velocity, Vector2.down);
