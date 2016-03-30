@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.Scripts.Physics
+namespace Assets.Scripts
 {
     /// <summary>
     /// This class contains methods to help with angle computations
@@ -68,6 +68,14 @@ namespace Assets.Scripts.Physics
             return rotatedPoint;
         }
 
+        /// <summary>
+        /// Calculates the point where two lines intersect
+        /// </summary>
+        /// <param name="a1">Point A of line 1</param>
+        /// <param name="b1">Point B of line 1</param>
+        /// <param name="a2">Point A of line 2</param>
+        /// <param name="b2">Point B of line 2</param>
+        /// <returns>The point where two given lines intersect</returns>
         public static Vector2 LineIntersectionPoint(Vector2 a1, Vector2 b1, Vector2 a2, Vector2 b2)
         {
             // Get A,B,C of first line - points : a1 to b1

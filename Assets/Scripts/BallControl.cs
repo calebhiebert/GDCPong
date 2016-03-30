@@ -1,56 +1,54 @@
 ﻿using UnityEngine;
-using Assets.Scripts.Physics;
 
 namespace Assets.Scripts
 {
     public class BallControl : MonoBehaviour
     {
-        public float InitialSpeed;
-
+        [SerializeField]
         private Vector2 _velocity;
+
+        // the unity physics rigidbody for this ball
+        private Rigidbody2D _rigidBody;
+
+        /// <summary>
+        /// Called when the object is spawned, or when the game is started
+        /// </summary>
+        void Start()
+        {
+            _rigidBody = GetComponent<Rigidbody2D>();
+        }
 	
         /// <summary>
-        /// Called once per frame
+        /// Called once per physics-frame
         /// </summary>
-        void Update () {
-
-            // step the physics and set the ball's new position
-            transform.position = StepPosition(Time.deltaTime, transform.position);
+        void FixedUpdate ()
+        {
+            _rigidBody.velocity = _velocity;
         }
 
         /// <summary>
-        /// Calculates one physics step for the position of the ball
+        /// Called when the ball collides with something
         /// </summary>
-        /// <param name="timePassed">The amount of time that has passed since the last step</param>
-        /// <param name="currentPosition">The current position to make calculations from</param>
-        /// <returns>The new calculated position</returns>
-        Vector2 StepPosition(float timePassed, Vector2 currentPosition)
+        /// <param name="other">The object that the ball collided with</param>
+        void OnCollisionEnter2D(Collision2D other)
         {
-            // move the object
-            var newPosition = currentPosition + _velocity * timePassed;
-
-            return newPosition;
+            _velocity = ReflectVelocity(other.gameObject) * -1;
         }
 
         /// <summary>
-        /// Steps the position n amount of step
+        /// Reflects the ball off of a given surface
         /// </summary>
-        /// <param name="steps">The number of steps to make in the simulation</param>
-        /// <param name="timePerStep">The amount of time (in seconds) that each step will take</param>
-        /// <returns>An array containing the position calculated from each step</returns>
-        Vector2[] StepPosition(int steps, float timePerStep, Vector2 currentPosition)
+        /// <param name="bounceObject">The object that is being bounced off of</param>
+        /// <returns>The new velocity angle</returns>
+        Vector2 ReflectVelocity(GameObject bounceObject)
         {
-            var positions = new Vector2[steps];
-
-            // set the initial position
-            positions[0] = currentPosition;
-
-            for (int i = 1; i < steps; i++)
+            if(bounceObject.tag == "Paddle")
             {
-                positions[i] = StepPosition(timePerStep, positions[i - 1]);
+                return Vector2.Reflect(_velocity, Vector2.down);
+            } else
+            {
+                return Vector2.Reflect(_velocity, Vector2.left);
             }
-
-            return positions;
         }
     }
 }
