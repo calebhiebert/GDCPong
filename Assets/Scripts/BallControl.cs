@@ -32,6 +32,18 @@ namespace Assets.Scripts
         // the unity physics rigidbody for this ball
         private Rigidbody2D _rigidBody;
 
+        //How fast the ball follows the sserving paddle
+        [SerializeField] private float _serveFollowSmoothing = 7;
+
+        // True while right paddle is serving
+        private static bool _rightIsServing = false;
+
+        // True while left paddle is serving
+        private static bool _leftIsServing = false;
+
+        //how far away the ball is from the serving paddle
+        [SerializeField] private float _serveOffset;
+
         public float GoalBounds;
 
         /// <summary>
@@ -55,6 +67,10 @@ namespace Assets.Scripts
         /// Called every frame
         /// </summary>
         void Update() {
+            Transform rightPaddle = GameObject.Find("PaddleR").transform;
+            Transform leftPaddle = GameObject.Find("PaddleL").transform;
+            var serveDelay = 1.5f;
+
             if (Input.GetButtonDown("Reset")) 
             {
                 //Kind of brutish but it works
@@ -62,16 +78,26 @@ namespace Assets.Scripts
                 StopAllCoroutines();                
                 StartCoroutine(ResetBall(Random.value < .5));
             }
+
+            //Checks if ball is outside the scoring bounds
             if (transform.position.x < -GoalBounds || Mathf.Abs(transform.position.y) > 9) {
-                //Score("Player2");
-                Debug.Log("Player2 Scores!");
-                StartCoroutine(ResetBall(false));
+               Debug.Log("Player2 Scores!");
+                StartCoroutine(ServeBall(leftPaddle, serveDelay));
+                // TODO call score method from game master for player 2
             }
             else if (transform.position.x > GoalBounds || Mathf.Abs(transform.position.y) > 9) {
-                //Score("Player2");
                 Debug.Log("Player1 Scores!");
-                StartCoroutine(ResetBall(true));
+                StartCoroutine(ServeBall(rightPaddle, serveDelay));
+                // TODO call score method from game master for player 1
             }
+            else if (_rightIsServing) {
+                //make the ball follow the right paddle
+                transform.position = new Vector2(transform.position.x, Mathf.Lerp(transform.position.y, rightPaddle.position.y, _serveFollowSmoothing * Time.deltaTime));
+            }
+            else if (_leftIsServing) {
+                transform.position = new Vector2(transform.position.x, Mathf.Lerp(transform.position.y, leftPaddle.position.y, _serveFollowSmoothing * Time.deltaTime));
+            }
+
         }
 
         /// <summary>
@@ -141,6 +167,41 @@ namespace Assets.Scripts
             }
             else {
                 _velocity = MathUtils.AngleToVector(Random.Range(210, 331)) * _startSpeed;
+            }
+        }
+
+        /// <summary>
+        /// Coroutine that starts and controls serve duration
+        /// </summary>
+        /// <param name="paddle">Transform of serving paddle</param>
+        /// <returns></returns>
+        IEnumerator ServeBall(Transform paddle, float delay) {
+            _velocity = Vector2.zero;
+
+            if (paddle.name.Contains("R")) {
+                //Move ball in front of paddle
+                transform.position = new Vector2(paddle.position.x - _serveOffset, paddle.position.y);
+
+                //Make ball follow paddle
+                _rightIsServing = true;
+
+                //Wait for delay
+                yield return new WaitForSeconds(delay);
+
+                //Make ball stop following paddle
+                _rightIsServing = false;
+
+                //Give ball starting velocity toward paddle
+                _velocity = Vector2.right * _startSpeed;
+            }
+            else {
+                transform.position = new Vector2(paddle.position.x + _serveOffset, paddle.position.y);
+                _leftIsServing = true;
+
+                yield return new WaitForSeconds(delay);
+
+                _leftIsServing = false;
+                _velocity = Vector2.left * _startSpeed;
             }
         }
     }
