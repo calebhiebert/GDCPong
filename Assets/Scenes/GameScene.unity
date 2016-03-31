@@ -324,6 +324,10 @@ Prefab:
       propertyPath: PreviewSkin
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11472762, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
+      propertyPath: _serveOffset
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
   m_IsPrefabParent: 0
@@ -547,7 +551,7 @@ Canvas:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1421048479}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -556,7 +560,6 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0

@@ -1,28 +1,30 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Assets.Scripts
-{
+namespace Assets.Scripts {
     /// <summary>
     /// This script goes on the ball GameObject
     /// It handles moving of the ball
     /// It also handles ball collision and bounce angles
     /// </summary>
-    public class BallControl : MonoBehaviour
-    {
+    public class BallControlOLD : MonoBehaviour {
         // The speed the ball will move (in unity-units per second)
-        [SerializeField] private Vector2 _velocity;
+        [SerializeField]
+        private Vector2 _velocity;
 
         // The ball's velocity will be increased by this amount every time it hits a paddle
-        [SerializeField] private float _speedIncrease;
+        [SerializeField]
+        private float _speedIncrease;
 
         // The amount of curve to be added to the ball
         // Relative to its distance from the center of a paddle
         // In testing --Daniel: I'm not sure if this is what this object was intended to do but I used it aanyways--
-        [SerializeField] private AnimationCurve _reflectCurve;
+        [SerializeField]
+        private AnimationCurve _reflectCurve;
 
         //The speed of the ball when it is reset
-        [SerializeField] private float _startSpeed;
+        [SerializeField]
+        private float _startSpeed;
 
         //The degree to which the player can affect the balls rebound
         //A value of 0 yeilds no control and a value of 1 is 180 degrees of control
@@ -33,7 +35,8 @@ namespace Assets.Scripts
         private Rigidbody2D _rigidBody;
 
         //How fast the ball follows the sserving paddle
-        [SerializeField] private float _serveFollowSmoothing = 7;
+        [SerializeField]
+        private float _serveFollowSmoothing = 7;
 
         // True while right paddle is serving
         private static bool _rightIsServing = false;
@@ -42,24 +45,23 @@ namespace Assets.Scripts
         private static bool _leftIsServing = false;
 
         //how far away the ball is from the serving paddle
-        [SerializeField] private float _serveOffset;
+        [SerializeField]
+        private float _serveOffset;
 
         public float GoalBounds;
 
         /// <summary>
         /// Called when the object is spawned, or when the game is started
         /// </summary>
-        void Start()
-        {
+        void Start() {
             _rigidBody = GetComponent<Rigidbody2D>();
-            StartCoroutine(ResetBall(Random.Range(0,2) == 0));
+            StartCoroutine(ResetBall(Random.Range(0, 2) == 0));
         }
-	
+
         /// <summary>
         /// Called once per physics-frame
         /// </summary>
-        void FixedUpdate ()
-        {
+        void FixedUpdate() {
             _rigidBody.velocity = _velocity;
         }
 
@@ -71,17 +73,16 @@ namespace Assets.Scripts
             Transform leftPaddle = GameObject.Find("PaddleL").transform;
             var serveDelay = 1.5f;
 
-            if (Input.GetButtonDown("Reset")) 
-            {
+            if (Input.GetButtonDown("Reset")) {
                 //Kind of brutish but it works
                 //I havent figured out how to stop a coroutine that has a parameter yet
-                StopAllCoroutines();                
+                StopAllCoroutines();
                 StartCoroutine(ResetBall(Random.value < .5));
             }
 
             //Checks if ball is outside the scoring bounds
             if (transform.position.x < -GoalBounds || Mathf.Abs(transform.position.y) > 9) {
-               Debug.Log("Player2 Scores!");
+                Debug.Log("Player2 Scores!");
                 StartCoroutine(ServeBall(leftPaddle, serveDelay));
                 // TODO call score method from game master for player 2
             }
@@ -104,8 +105,7 @@ namespace Assets.Scripts
         /// Called when the ball collides with something
         /// </summary>
         /// <param name="other">The object that the ball collided with</param>
-        void OnCollisionEnter2D(Collision2D other)
-        {
+        void OnCollisionEnter2D(Collision2D other) {
             _velocity = ReflectVelocity(other.gameObject) * -1;
 
             _velocity *= _speedIncrease + 1;
@@ -116,11 +116,9 @@ namespace Assets.Scripts
         /// </summary>
         /// <param name="bounceObject">The object that is being bounced off of</param>
         /// <returns>The new velocity angle</returns>
-        Vector2 ReflectVelocity(GameObject bounceObject)
-        {
-            
-            if(bounceObject.tag == "Paddle")
-            {
+        Vector2 ReflectVelocity(GameObject bounceObject) {
+
+            if (bounceObject.tag == "Paddle") {
                 //Find distance from center of paddle
                 float controlAngle = Mathf.Clamp(transform.position.y - bounceObject.transform.position.y, -1f, 1f);
 
@@ -128,8 +126,7 @@ namespace Assets.Scripts
                 Debug.Log("Uncurved\t" + controlAngle);
 
                 //could potentially cause some weird behaviour if ball is past the paddle
-                if (bounceObject.transform.position.x <= transform.position.x) 
-                {
+                if (bounceObject.transform.position.x <= transform.position.x) {
                     //use if reflectCurve isn't working
                     //Vector2 reflectAngle = new Vector2(controlAngle * _controlDamp, -1).normalized;
 
@@ -143,9 +140,9 @@ namespace Assets.Scripts
                     Vector2 reflectAngle = new Vector2(-controlAngle * _reflectCurve.Evaluate(Mathf.Abs(controlAngle)), -1).normalized;
                     return Vector2.Reflect(_velocity, reflectAngle);
                 }
-                
-            } else
-            {
+
+            }
+            else {
                 return Vector2.Reflect(_velocity, Vector2.left);
             }
         }
@@ -156,7 +153,7 @@ namespace Assets.Scripts
         /// </summary>
         /// <param name="direction">The side of the game area to send the ball to. True is left, False is Right</param>
         IEnumerator ResetBall(bool direction) {
-            
+
             _velocity = Vector2.zero;
             transform.position = Vector2.zero;
 
@@ -182,7 +179,7 @@ namespace Assets.Scripts
                 //Move ball in front of paddle
                 transform.position = new Vector2(paddle.position.x - _serveOffset, paddle.position.y);
 
-                //Make ball follow paddle
+                //Make ball start following paddle
                 _rightIsServing = true;
 
                 //Wait for delay
