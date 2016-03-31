@@ -10,6 +10,12 @@ namespace Assets.Scripts
     /// </summary>
     public class BallControl : MonoBehaviour
     {
+        // A delegate that will be called when the ball goes out of bounds and is reset
+        public delegate void BallOutOfBoundsEvent(Direction scoreDirection);
+
+        // An event that will be called when a player scores
+        public event BallOutOfBoundsEvent OnScore;
+
         // The speed the ball will move (in unity-units per second)
         [SerializeField] private Vector2 _velocity;
 
@@ -21,8 +27,11 @@ namespace Assets.Scripts
         // In testing --Daniel: I'm not sure if this is what this object was intended to do but I used it aanyways--
         [SerializeField] private AnimationCurve _reflectCurve;
 
-        //The speed of the ball when it is reset
+        // The speed of the ball when it is reset
         [SerializeField] private float _startSpeed;
+
+        // How long to wait after a point is scored before moving the ball
+        [SerializeField] private float _ballStartTimer;
 
         //The degree to which the player can affect the balls rebound
         //A value of 0 yeilds no control and a value of 1 is 180 degrees of control
@@ -35,12 +44,20 @@ namespace Assets.Scripts
         public float GoalBounds;
 
         /// <summary>
+        /// The different directions the ball can go in at the beginning of the game
+        /// </summary>
+        public enum Direction
+        {
+            Left, Right
+        }
+
+        /// <summary>
         /// Called when the object is spawned, or when the game is started
         /// </summary>
         void Start()
         {
             _rigidBody = GetComponent<Rigidbody2D>();
-            StartCoroutine(ResetBall(Random.Range(0,2) == 0));
+            StartCoroutine(ResetBall(Direction.Left));
         }
 	
         /// <summary>
@@ -59,18 +76,26 @@ namespace Assets.Scripts
             {
                 //Kind of brutish but it works
                 //I havent figured out how to stop a coroutine that has a parameter yet
-                StopAllCoroutines();                
-                StartCoroutine(ResetBall(Random.value < .5));
+                StopAllCoroutines();
+                
+                // TODO get this working randomly          
+                StartCoroutine(ResetBall(Direction.Left));
             }
             if (transform.position.x < -GoalBounds || Mathf.Abs(transform.position.y) > 9) {
-                //Score("Player2");
                 Debug.Log("Player2 Scores!");
-                StartCoroutine(ResetBall(false));
+                StartCoroutine(ResetBall(Direction.Right));
+
+                // Call the score event for any subscribed classes
+                if (OnScore != null)
+                    OnScore(Direction.Left);
             }
             else if (transform.position.x > GoalBounds || Mathf.Abs(transform.position.y) > 9) {
-                //Score("Player2");
                 Debug.Log("Player1 Scores!");
-                StartCoroutine(ResetBall(true));
+                StartCoroutine(ResetBall(Direction.Left));
+
+                // Call the score event for any subscribed classes
+                if (OnScore != null)
+                    OnScore(Direction.Right);
             }
         }
 
@@ -125,23 +150,53 @@ namespace Assets.Scripts
         }
 
         /// <summary>
+        /// Returns a random velocity pointing in a given direction
+        /// </summary>
+        /// <param name="direction">The direction to point the velocity in</param>
+        /// <returns>A random velocity pointing in a certain direction</returns>
+        private Vector2 GetRandomVelocity(Direction direction)
+        {
+            var randVelocity = Vector2.zero;
+
+            if(direction == Direction.Left)
+            {
+                randVelocity = MathUtils.AngleToVector(Random.Range(30, 151)) * _startSpeed;
+            }
+            
+            else if (direction == Direction.Right)
+            {
+                randVelocity = MathUtils.AngleToVector(Random.Range(210, 331)) * _startSpeed;
+            }
+
+            return randVelocity;
+        }
+
+        /// <summary>
         /// Resets the ball's position to the center of the game area
         /// and imparts a velocity of _startSpeed in a random direction toward one of the players
         /// </summary>
-        /// <param name="direction">The side of the game area to send the ball to. True is left, False is Right</param>
-        IEnumerator ResetBall(bool direction) {
+        /// <param name="direction">The side of the game area to send the ball to.</param>
+        IEnumerator ResetBall(Direction direction) {
             
+            // Reset the ball's position and velocity
             _velocity = Vector2.zero;
             transform.position = Vector2.zero;
 
-            yield return new WaitForSeconds(1.5f);
+            float timer = _ballStartTimer;
 
-            if (direction) {
-                _velocity = MathUtils.AngleToVector(Random.Range(30, 151)) * _startSpeed;
+            // Loop while updating a timer until the timer runs out
+            while(timer > 0)
+            {
+                timer -= Time.deltaTime;
+
+                // TODO update on screen timer with timer variable
+                Debug.Log("Time remaining: " + timer);
+
+                // wait until the next frame to run again
+                yield return null;
             }
-            else {
-                _velocity = MathUtils.AngleToVector(Random.Range(210, 331)) * _startSpeed;
-            }
+
+            _velocity = GetRandomVelocity(direction);
         }
     }
 }
