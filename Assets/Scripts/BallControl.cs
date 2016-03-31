@@ -17,8 +17,16 @@ namespace Assets.Scripts
 
         // The amount of curve to be added to the ball
         // Relative to its distance from the center of a paddle
-        // This is not yet functional
+        // In testing --Daniel: I'm not sure if this is what this object was intended to do but I used it aanyways--
         [SerializeField] private AnimationCurve _reflectCurve;
+
+        //The speed of the ball when it is reset
+        [SerializeField] private float _startSpeed;
+
+        //The degree to which the player can affect the balls rebound
+        //A value of 0 yeilds no control and a value of 1 is 180 degrees of control
+        //Use if _reflectCurve is not working
+        //[SerializeField] [Range(0,1)] private float _controlDamp;
 
         // the unity physics rigidbody for this ball
         private Rigidbody2D _rigidBody;
@@ -29,6 +37,7 @@ namespace Assets.Scripts
         void Start()
         {
             _rigidBody = GetComponent<Rigidbody2D>();
+            ResetBall(Random.Range(0,2) == 0);
         }
 	
         /// <summary>
@@ -37,6 +46,15 @@ namespace Assets.Scripts
         void FixedUpdate ()
         {
             _rigidBody.velocity = _velocity;
+        }
+
+        /// <summary>
+        /// Called every frame
+        /// </summary>
+        void Update() {
+            if (Input.GetButtonDown("Reset")) {
+                ResetBall(Random.Range(0, 2) == 0);
+            }
         }
 
         /// <summary>
@@ -57,14 +75,54 @@ namespace Assets.Scripts
         /// <returns>The new velocity angle</returns>
         Vector2 ReflectVelocity(GameObject bounceObject)
         {
-            // TODO make the reflect angle dynamic instead of hard coded
-
+            
             if(bounceObject.tag == "Paddle")
             {
-                return Vector2.Reflect(_velocity, Vector2.down);
+                //Find distance from center of paddle
+                float controlAngle = Mathf.Clamp(transform.position.y - bounceObject.transform.position.y, -1f, 1f);
+
+                Debug.Log("Curved\t" + controlAngle * _reflectCurve.Evaluate(Mathf.Abs(controlAngle)));
+                Debug.Log("Uncurved\t" + controlAngle);
+
+                //could potentially cause some weird behaviour if ball is past the paddle
+                if (bounceObject.transform.position.x <= transform.position.x) 
+                {
+                    //use if reflectCurve isn't working
+                    //Vector2 reflectAngle = new Vector2(controlAngle * _controlDamp, -1).normalized;
+
+                    Vector2 reflectAngle = new Vector2(controlAngle * _reflectCurve.Evaluate(Mathf.Abs(controlAngle)), -1).normalized;
+                    return Vector2.Reflect(_velocity, reflectAngle);
+                }
+                else {
+                    //use if reflectCurve isn't working
+                    //Vector2 reflectAngle = new Vector2(-controlAngle * _controlDamp, -1).normalized;
+
+                    Vector2 reflectAngle = new Vector2(-controlAngle * _reflectCurve.Evaluate(Mathf.Abs(controlAngle)), -1).normalized;
+                    return Vector2.Reflect(_velocity, reflectAngle);
+                }
+                
             } else
             {
                 return Vector2.Reflect(_velocity, Vector2.left);
+            }
+        }
+
+        /// <summary>
+        /// Resets the ball's position to the center of the game area
+        /// and imparts a velocity of _startSpeed in a random direction
+        /// </summary>
+        /// <param name="direction">The side of the game area to send the ball to. True is left, False is Right</param>
+        void ResetBall(bool direction) {
+
+            // TODO Make the ball wait before starting movement
+
+            transform.position = Vector2.zero;
+
+            if (direction) {
+                _velocity = MathUtils.AngleToVector(Random.Range(30, 151)) * _startSpeed;
+            }
+            else {
+                _velocity = MathUtils.AngleToVector(Random.Range(210, 331)) * _startSpeed;
             }
         }
     }
