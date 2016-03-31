@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Paddle
   - Ball
+  - KillBox_L
+  - KillBox_R
   layers:
   - Default
   - TransparentFX
