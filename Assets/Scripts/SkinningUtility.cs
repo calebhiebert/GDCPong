@@ -27,13 +27,24 @@ namespace Assets.Scripts
         /// </summary>
         public virtual void Update()
         {
-            // If preview skin is checked, but the skin is not spawned
-            if (PreviewSkin && _appliedSkin == null && Application.isEditor)
-                ApplySkin(DefaultSkin);
+            if (Application.isEditor && !Application.isPlaying)
+            {
+                // If preview skin is checked, but the skin is not spawned
+                if (PreviewSkin && _appliedSkin == null)
+                {
+                    Debug.Log("Previewing skin for " + gameObject.name);
 
-            // If preview skin is not checked, but the skin is spawned
-            else if (!PreviewSkin && _appliedSkin != null && Application.isEditor)
-                DestroyImmediate(_appliedSkin);
+                    ApplySkin(DefaultSkin);
+                }
+
+                // If preview skin is not checked, but the skin is spawned
+                else if (!PreviewSkin && _appliedSkin != null)
+                {
+                    Debug.Log("Destroying preview for " + gameObject.name);
+
+                    DestroyImmediate(_appliedSkin);
+                }
+            }
         }
 
         /// <summary>
@@ -43,6 +54,7 @@ namespace Assets.Scripts
         /// <returns>The skin object that was spawned</returns>
         public virtual GameObject ApplySkin(GameObject skin)
         {
+            Debug.Log("Spawning skin for " + gameObject.name);
 
             // Spawn the skin
             var appliedSkin = Instantiate(skin);

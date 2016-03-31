@@ -70,10 +70,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 196262}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e68af9e3437f1864aa760c75d5e1fbc5, type: 3}
+  m_Script: {fileID: 11500000, guid: fda3fa0d44c5b0e49b44adecf540f275, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ballSkin: {fileID: 160838, guid: 1417af6e7d313284295c123d8c7f47d0, type: 2}
+  DefaultSkin: {fileID: 160838, guid: 1417af6e7d313284295c123d8c7f47d0, type: 2}
+  PreviewSkin: 0
 --- !u!114 &11472762
 MonoBehaviour:
   m_ObjectHideFlags: 1
