@@ -18,7 +18,7 @@ namespace Assets.Scripts
 
         // The amount of curve to be added to the ball
         // Relative to its distance from the center of a paddle
-        // In testing --Daniel: I'm not sure if this is what this object was intended to do but I used it anyways--
+        // In testing --Daniel: I'm not sure if this is what this object was intended to do but I used it aanyways--
         [SerializeField] private AnimationCurve _reflectCurve;
 
         //The speed of the ball when it is reset
@@ -80,20 +80,8 @@ namespace Assets.Scripts
         /// <param name="other">The object that the ball collided with</param>
         void OnCollisionEnter2D(Collision2D other)
         {
-            // Reset the ball when it goes out of bounds
-            if(other.gameObject.tag == "KillBox_L")
-            {
-                // TODO add scores and or lives
-                ResetBall(true);
-            }
-
-            else if (other.gameObject.tag == "KillBox_R")
-            {
-                // TODO add scores and or lives
-                ResetBall(false);
-            }
-
             _velocity = ReflectVelocity(other.gameObject) * -1;
+
             _velocity *= _speedIncrease + 1;
         }
 
