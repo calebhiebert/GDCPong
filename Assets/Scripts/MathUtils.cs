@@ -21,7 +21,7 @@ namespace Assets.Scripts
             // Get the angle in radians
             // Convert the angle to degrees
             // Subtract 90 to align with unity coordinates
-            var angle = Mathf.Atan2(normalized.y, normalized.x)*Mathf.Rad2Deg - 90;
+            var angle = Mathf.Repeat(Mathf.Atan2(normalized.y, normalized.x)*Mathf.Rad2Deg - 90, 360);
 
             return angle;
         }
