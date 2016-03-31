@@ -38,7 +38,6 @@ namespace Assets.Scripts
         {
             _rigidBody = GetComponent<Rigidbody2D>();
             ResetBall(Random.Range(0,2) == 0);
-            Debug.Log(MathUtils.VectorToAngle(Vector2.down));
         }
 	
         /// <summary>
