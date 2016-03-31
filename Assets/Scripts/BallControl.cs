@@ -32,6 +32,8 @@ namespace Assets.Scripts
         // the unity physics rigidbody for this ball
         private Rigidbody2D _rigidBody;
 
+        public float GoalBounds;
+
         /// <summary>
         /// Called when the object is spawned, or when the game is started
         /// </summary>
@@ -59,6 +61,16 @@ namespace Assets.Scripts
                 //I havent figured out how to stop a coroutine that has a parameter yet
                 StopAllCoroutines();                
                 StartCoroutine(ResetBall(Random.value < .5));
+            }
+            if (transform.position.x < -GoalBounds || Mathf.Abs(transform.position.y) > 9) {
+                //Score("Player2");
+                Debug.Log("Player2 Scores!");
+                StartCoroutine(ResetBall(false));
+            }
+            else if (transform.position.x > GoalBounds || Mathf.Abs(transform.position.y) > 9) {
+                //Score("Player2");
+                Debug.Log("Player1 Scores!");
+                StartCoroutine(ResetBall(true));
             }
         }
 
@@ -122,7 +134,7 @@ namespace Assets.Scripts
             _velocity = Vector2.zero;
             transform.position = Vector2.zero;
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1.5f);
 
             if (direction) {
                 _velocity = MathUtils.AngleToVector(Random.Range(30, 151)) * _startSpeed;
