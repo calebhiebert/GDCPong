@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
@@ -17,7 +18,7 @@ namespace Assets.Scripts
 
         // The amount of curve to be added to the ball
         // Relative to its distance from the center of a paddle
-        // In testing --Daniel: I'm not sure if this is what this object was intended to do but I used it anyways--
+        // In testing --Daniel: I'm not sure if this is what this object was intended to do but I used it aanyways--
         [SerializeField] private AnimationCurve _reflectCurve;
 
         //The speed of the ball when it is reset
@@ -31,13 +32,15 @@ namespace Assets.Scripts
         // the unity physics rigidbody for this ball
         private Rigidbody2D _rigidBody;
 
+        public float GoalBounds;
+
         /// <summary>
         /// Called when the object is spawned, or when the game is started
         /// </summary>
         void Start()
         {
             _rigidBody = GetComponent<Rigidbody2D>();
-            ResetBall(Random.Range(0,2) == 0);
+            StartCoroutine(ResetBall(Random.Range(0,2) == 0));
         }
 	
         /// <summary>
@@ -52,8 +55,22 @@ namespace Assets.Scripts
         /// Called every frame
         /// </summary>
         void Update() {
-            if (Input.GetButtonDown("Reset")) {
-                ResetBall(Random.Range(0, 2) == 0);
+            if (Input.GetButtonDown("Reset")) 
+            {
+                //Kind of brutish but it works
+                //I havent figured out how to stop a coroutine that has a parameter yet
+                StopAllCoroutines();                
+                StartCoroutine(ResetBall(Random.value < .5));
+            }
+            if (transform.position.x < -GoalBounds || Mathf.Abs(transform.position.y) > 9) {
+                //Score("Player2");
+                Debug.Log("Player2 Scores!");
+                StartCoroutine(ResetBall(false));
+            }
+            else if (transform.position.x > GoalBounds || Mathf.Abs(transform.position.y) > 9) {
+                //Score("Player2");
+                Debug.Log("Player1 Scores!");
+                StartCoroutine(ResetBall(true));
             }
         }
 
@@ -63,20 +80,8 @@ namespace Assets.Scripts
         /// <param name="other">The object that the ball collided with</param>
         void OnCollisionEnter2D(Collision2D other)
         {
-            // Reset the ball when it goes out of bounds
-            if(other.gameObject.tag == "KillBox_L")
-            {
-                // TODO add scores and or lives
-                ResetBall(true);
-            }
-
-            else if (other.gameObject.tag == "KillBox_R")
-            {
-                // TODO add scores and or lives
-                ResetBall(false);
-            }
-
             _velocity = ReflectVelocity(other.gameObject) * -1;
+
             _velocity *= _speedIncrease + 1;
         }
 
@@ -121,14 +126,15 @@ namespace Assets.Scripts
 
         /// <summary>
         /// Resets the ball's position to the center of the game area
-        /// and imparts a velocity of _startSpeed in a random direction
+        /// and imparts a velocity of _startSpeed in a random direction toward one of the players
         /// </summary>
         /// <param name="direction">The side of the game area to send the ball to. True is left, False is Right</param>
-        void ResetBall(bool direction) {
-
-            // TODO Make the ball wait before starting movement
-
+        IEnumerator ResetBall(bool direction) {
+            
+            _velocity = Vector2.zero;
             transform.position = Vector2.zero;
+
+            yield return new WaitForSeconds(1.5f);
 
             if (direction) {
                 _velocity = MathUtils.AngleToVector(Random.Range(30, 151)) * _startSpeed;
