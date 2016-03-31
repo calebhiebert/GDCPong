@@ -105,7 +105,10 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 0
   _startSpeed: 4
-  GoalBounds: 16
+  _ballStartTimer: 1.5
+  GoalBounds: 10
+  _serveOffset: 1
+  _serveFollowSmoothing: 15
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

@@ -42,9 +42,9 @@ namespace Assets.Scripts
         private Rigidbody2D _rigidBody;
 
         public float GoalBounds;
+
         [SerializeField] private float _serveOffset = 1;
-        private bool _rightIsServing = false;
-        private bool _leftIsServing = false;
+
         [SerializeField] private float _serveFollowSmoothing = 7;
 
         /// <summary>
@@ -53,6 +53,11 @@ namespace Assets.Scripts
         public enum Direction
         {
             Left, Right
+        }
+
+        public enum Paddle
+        {
+            PaddleL, PaddleR
         }
 
         /// <summary>
@@ -76,21 +81,18 @@ namespace Assets.Scripts
         /// Called every frame
         /// </summary>
         void Update() {
-            Transform rightPaddle = GameObject.Find("PaddleR").transform;
-            Transform leftPaddle = GameObject.Find("PaddleL").transform;
 
             if (Input.GetButtonDown("Reset")) 
             {
                 //Kind of brutish but it works
                 //I havent figured out how to stop a coroutine that has a parameter yet
                 StopAllCoroutines();
-                
-                // TODO get this working randomly          
+                         
                 StartCoroutine(ResetBall((Random.value < .5)? Direction.Left : Direction.Right));
             }
             if (transform.position.x < -GoalBounds || Mathf.Abs(transform.position.y) > 9) {
                 Debug.Log("Player2 Scores!");
-                StartCoroutine(ServeBall(leftPaddle, 1.5f));
+                StartCoroutine(AttachToPaddle(Paddle.PaddleL, 1.5f, _serveFollowSmoothing));
 
                 // Call the score event for any subscribed classes
                 if (OnScore != null)
@@ -98,18 +100,11 @@ namespace Assets.Scripts
             }
             else if (transform.position.x > GoalBounds || Mathf.Abs(transform.position.y) > 9) {
                 Debug.Log("Player1 Scores!");
-                StartCoroutine(ServeBall(rightPaddle, 1.5f));
+                StartCoroutine(AttachToPaddle(Paddle.PaddleR, 1.5f, _serveFollowSmoothing));
 
                 // Call the score event for any subscribed classes
                 if (OnScore != null)
                     OnScore(Direction.Right);
-            }
-            else if (_rightIsServing) {
-                //make the ball follow the right paddle
-                transform.position = new Vector2(transform.position.x, Mathf.Lerp(transform.position.y, rightPaddle.position.y, _serveFollowSmoothing * Time.deltaTime));
-            }
-            else if (_leftIsServing) {
-                transform.position = new Vector2(transform.position.x, Mathf.Lerp(transform.position.y, leftPaddle.position.y, _serveFollowSmoothing * Time.deltaTime));
             }
         }
 
@@ -132,7 +127,7 @@ namespace Assets.Scripts
         Vector2 ReflectVelocity(GameObject bounceObject)
         {
             
-            if(bounceObject.tag == "Paddle")
+            if(bounceObject.tag.Contains("Paddle"))
             {
                 //Find distance from center of paddle
                 float controlAngle = Mathf.Clamp(transform.position.y - bounceObject.transform.position.y, -1f, 1f);
@@ -214,38 +209,41 @@ namespace Assets.Scripts
         }
 
         /// <summary>
-        /// Coroutine that starts and controls serve duration
+        /// Will temporarily attach the ball to a given paddle
         /// </summary>
-        /// <param name="paddle">Transform of serving paddle</param>
-        /// <returns></returns>
-        IEnumerator ServeBall(Transform paddle, float delay) {
+        /// <param name="paddle">The paddle to attach to</param>
+        /// <param name="attachDuration">How long the ball will stay attached to the paddle</param>
+        /// <param name="smoothing">How smooth</param>
+        /// <returns>Coroutine stuff</returns>
+        IEnumerator AttachToPaddle(Paddle paddle, float attachDuration, float smoothing) {
+
             _velocity = Vector2.zero;
 
-            if (paddle.name.EndsWith("R")) {
-                //Move ball in front of paddle
-                transform.position = new Vector2(paddle.position.x - _serveOffset, paddle.position.y);
+            var selectedPaddle = GameObject.FindGameObjectWithTag(paddle.ToString());
 
-                //Make ball start following paddle
-                _rightIsServing = true;
+            var offset = 0f;
 
-                //Wait for delay
-                yield return new WaitForSeconds(delay);
+            if (paddle == Paddle.PaddleR)
+                offset = -_serveOffset;
 
-                //Make ball stop following paddle
-                _rightIsServing = false;
+            else if (paddle == Paddle.PaddleL)
+                offset = _serveOffset;
 
-                //Give ball starting velocity toward paddle
-                _velocity = Vector2.right * _startSpeed;
+            transform.position = new Vector2(selectedPaddle.transform.position.x + offset, selectedPaddle.transform.position.y);
+
+            var finishVelocity = (paddle == Paddle.PaddleR ? Vector2.right : Vector2.left) * _startSpeed;
+
+            while (attachDuration > 0)
+            {
+                attachDuration -= Time.deltaTime;
+
+                transform.position = new Vector2(transform.position.x, Mathf.Lerp(transform.position.y, selectedPaddle.transform.position.y, smoothing * Time.deltaTime));
+
+                yield return null;
             }
-            else {
-                transform.position = new Vector2(paddle.position.x + _serveOffset, paddle.position.y);
-                _leftIsServing = true;
 
-                yield return new WaitForSeconds(delay);
 
-                _leftIsServing = false;
-                _velocity = Vector2.left * _startSpeed;
-            }
+            _velocity = finishVelocity;
         }
     }
 }

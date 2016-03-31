@@ -144,6 +144,10 @@ Prefab:
       propertyPath: PreviewSkin
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 100130, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
+      propertyPath: m_TagString
+      value: PaddleL
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
   m_IsPrefabParent: 0
@@ -185,14 +189,6 @@ Prefab:
     - target: {fileID: 436298, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
       propertyPath: m_RootOrder
       value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 11457054, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
-      propertyPath: PreviewSkin
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11472762, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
-      propertyPath: _ballStartTimer
-      value: 1.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
@@ -329,6 +325,10 @@ Prefab:
     - target: {fileID: 11458568, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
       propertyPath: PreviewSkin
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100130, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
+      propertyPath: m_TagString
+      value: PaddleR
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
