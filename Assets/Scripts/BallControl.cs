@@ -90,7 +90,7 @@ namespace Assets.Scripts
             }
             if (transform.position.x < -GoalBounds || Mathf.Abs(transform.position.y) > 9) {
                 Debug.Log("Player2 Scores!");
-                StartCoroutine(ResetBall(Direction.Right));
+                StartCoroutine(ServeBall(leftPaddle, 1.5f));
 
                 // Call the score event for any subscribed classes
                 if (OnScore != null)
@@ -98,7 +98,7 @@ namespace Assets.Scripts
             }
             else if (transform.position.x > GoalBounds || Mathf.Abs(transform.position.y) > 9) {
                 Debug.Log("Player1 Scores!");
-                StartCoroutine(ResetBall(Direction.Left));
+                StartCoroutine(ServeBall(rightPaddle, 1.5f));
 
                 // Call the score event for any subscribed classes
                 if (OnScore != null)
@@ -221,7 +221,7 @@ namespace Assets.Scripts
         IEnumerator ServeBall(Transform paddle, float delay) {
             _velocity = Vector2.zero;
 
-            if (paddle.name.Contains("R")) {
+            if (paddle.name.EndsWith("R")) {
                 //Move ball in front of paddle
                 transform.position = new Vector2(paddle.position.x - _serveOffset, paddle.position.y);
 
