@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
@@ -37,7 +38,7 @@ namespace Assets.Scripts
         void Start()
         {
             _rigidBody = GetComponent<Rigidbody2D>();
-            ResetBall(Random.Range(0,2) == 0);
+            StartCoroutine(ResetBall(Random.Range(0,2) == 0));
         }
 	
         /// <summary>
@@ -52,8 +53,12 @@ namespace Assets.Scripts
         /// Called every frame
         /// </summary>
         void Update() {
-            if (Input.GetButtonDown("Reset")) {
-                ResetBall(Random.Range(0, 2) == 0);
+            if (Input.GetButtonDown("Reset")) 
+            {
+                //Kind of brutish but it works
+                //I havent figured out how to stop a coroutine that has a parameter yet
+                StopAllCoroutines();                
+                StartCoroutine(ResetBall(Random.value < .5));
             }
         }
 
@@ -109,14 +114,15 @@ namespace Assets.Scripts
 
         /// <summary>
         /// Resets the ball's position to the center of the game area
-        /// and imparts a velocity of _startSpeed in a random direction
+        /// and imparts a velocity of _startSpeed in a random direction toward one of the players
         /// </summary>
         /// <param name="direction">The side of the game area to send the ball to. True is left, False is Right</param>
-        void ResetBall(bool direction) {
-
-            // TODO Make the ball wait before starting movement
-
+        IEnumerator ResetBall(bool direction) {
+            
+            _velocity = Vector2.zero;
             transform.position = Vector2.zero;
+
+            yield return new WaitForSeconds(1f);
 
             if (direction) {
                 _velocity = MathUtils.AngleToVector(Random.Range(30, 151)) * _startSpeed;
