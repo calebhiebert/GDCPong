@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 
 namespace Assets.Scripts
 {
@@ -84,19 +85,41 @@ namespace Assets.Scripts
         /// <returns>The skin object that was spawned</returns>
         public virtual GameObject ApplySkin(GameObject skin)
         {
-            // Spawn the skin
-            var appliedSkin = Instantiate(skin);
+            if (Application.isEditor && !Application.isPlaying)
+            {
+                /* 
+                If we are in the editor, we use InstantiatePrefab so that the skin
+                can be edited and saved without being opened seperately
+                */
+                var appliedSkin = PrefabUtility.InstantiatePrefab(skin) as GameObject;
 
-            // Set the skin's parent to the current object, do not keep the world position
-            appliedSkin.transform.SetParent(transform, false);
+                // Set the skin's parent to the current object, do not keep the world position
+                appliedSkin.transform.SetParent(transform, false);
 
-            // Set the name to keep things neat in the unity editor
-            appliedSkin.name = skin.name;
+                // Set the name to keep things neat in the unity editor
+                appliedSkin.name = skin.name;
 
-            // set the applied skin
-            _appliedSkin = appliedSkin;
+                // set the applied skin
+                _appliedSkin = appliedSkin;
 
-            return appliedSkin;
+                return appliedSkin;
+            }
+            else
+            {
+                // Spawn the skin
+                var appliedSkin = Instantiate(skin);
+
+                // Set the skin's parent to the current object, do not keep the world position
+                appliedSkin.transform.SetParent(transform, false);
+
+                // Set the name to keep things neat in the unity editor
+                appliedSkin.name = skin.name;
+
+                // set the applied skin
+                _appliedSkin = appliedSkin;
+
+                return appliedSkin;
+            }
         }
 
         /// <summary>
