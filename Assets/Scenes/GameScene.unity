@@ -134,7 +134,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11477526, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
       propertyPath: ComputerControlled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11477526, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
       propertyPath: Speed
@@ -147,6 +147,14 @@ Prefab:
     - target: {fileID: 100130, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
       propertyPath: m_TagString
       value: PaddleL
+      objectReference: {fileID: 0}
+    - target: {fileID: 11477526, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
+      propertyPath: _paddlePredictSmoothness
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 11477526, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
+      propertyPath: AiMovementErrorMargin
+      value: 0.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6614dd625cb875741b1a085d0d379d9e, type: 2}
@@ -197,6 +205,14 @@ Prefab:
     - target: {fileID: 196262, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
       propertyPath: m_Layer
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 196262, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
+      propertyPath: m_TagString
+      value: Ball
+      objectReference: {fileID: 0}
+    - target: {fileID: 11472762, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
+      propertyPath: _speedIncrease
+      value: 0.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}

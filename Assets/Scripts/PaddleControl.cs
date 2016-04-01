@@ -22,6 +22,9 @@ namespace Assets.Scripts
 
         // Should the ai be used
         public bool ComputerControlled;
+        
+        // How accurate the ai will be when moving the paddle
+        public float AiMovementErrorMargin;
 
         // A reference to the ball object, only used for ai calculations
         private GameObject _ball;
@@ -48,29 +51,46 @@ namespace Assets.Scripts
             }
             else
             {
-                // Get the y position of the ball
-                var ballY = _ball.transform.position.y;
+                var ballPredict = PredictPosition();
 
-                // Create a movement axis based on the ball's y position
-                var axis = 0.0f;
+                var movementAxis = 0f;
 
-                // If the paddle is below the ball
-                if (ballY > transform.position.y)
-                {
-                    // Set the axis to 'up'
-                    axis = 1.0f;
-                }
+                if (ballPredict.y > transform.position.y + AiMovementErrorMargin)
+                    movementAxis = 1;
 
-                // If the paddle is above the ball
-                else if (ballY < transform.position.y)
-                {
-                    // Set the axis to 'down'
-                    axis = -1.0f;
-                }
+                if (ballPredict.y < transform.position.y - AiMovementErrorMargin)
+                    movementAxis = -1;
 
-                // Move the paddle and set the new position
-                transform.position = Move(Time.deltaTime, transform.position, axis);
+                transform.position = Move(Time.deltaTime, transform.position, movementAxis);
             }
+        }
+
+        /// <summary>
+        /// This method will predict where the paddle has to be by the time the ball will reach it
+        /// </summary>
+        /// <returns>The position to try and move to</returns>
+        Vector2 PredictPosition()
+        {
+            // TODO replace with a more performant solution
+            var bc = _ball.GetComponent<BallControl>();
+
+            var predictionData = new BallControl.BallPredictionData { newVelocity = _ball.GetComponent<Rigidbody2D>().velocity, collisionPoint = _ball.transform.position };
+
+            // Calculate 3 ball bounces in the future
+            for (int i = 0; i < 3; i++)
+            {
+                predictionData = bc.PredictNextCollisionPoint(predictionData.collisionPoint, predictionData.newVelocity, 7);
+
+                if (predictionData.willCollideWith == null)
+                {
+                    break;
+                } else if (predictionData.willCollideWith == gameObject)
+                {
+                    break;
+                }
+            }
+
+            return predictionData.collisionPoint;
         }
 
         /// <summary>

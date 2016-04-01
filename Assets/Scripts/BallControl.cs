@@ -106,8 +106,6 @@ namespace Assets.Scripts
                 if (OnScore != null)
                     OnScore(Direction.Right);
             }
-
-            PredictNextCollisionPoint(transform.position);
         }
 
         /// <summary>
@@ -116,9 +114,9 @@ namespace Assets.Scripts
         /// <param name="other">The object that the ball collided with</param>
         void OnCollisionEnter2D(Collision2D other)
         {
-            _velocity = ReflectVelocity(other.gameObject) * -1;
+            _velocity = ReflectVelocity(other.gameObject, _velocity) * -1;
 
-            _velocity *= _speedIncrease + 1;
+            _velocity += (_speedIncrease * _velocity.normalized);
         }
 
         /// <summary>
@@ -126,7 +124,7 @@ namespace Assets.Scripts
         /// </summary>
         /// <param name="bounceObject">The object that is being bounced off of</param>
         /// <returns>The new velocity angle</returns>
-        Vector2 ReflectVelocity(GameObject bounceObject)
+        Vector2 ReflectVelocity(GameObject bounceObject, Vector2 currentVelocity)
         {
             
             if(bounceObject.tag.Contains("Paddle"))
@@ -134,8 +132,8 @@ namespace Assets.Scripts
                 //Find distance from center of paddle
                 float controlAngle = Mathf.Clamp(transform.position.y - bounceObject.transform.position.y, -1f, 1f);
 
-                Debug.Log("Curved\t" + controlAngle * _reflectCurve.Evaluate(Mathf.Abs(controlAngle)));
-                Debug.Log("Uncurved\t" + controlAngle);
+                //Debug.Log("Curved\t" + controlAngle * _reflectCurve.Evaluate(Mathf.Abs(controlAngle)));
+                //Debug.Log("Uncurved\t" + controlAngle);
 
                 //could potentially cause some weird behaviour if ball is past the paddle
                 if (bounceObject.transform.position.x <= transform.position.x) 
@@ -144,14 +142,14 @@ namespace Assets.Scripts
                     //Vector2 reflectAngle = new Vector2(controlAngle * _controlDamp, -1).normalized;
 
                     Vector2 reflectAngle = new Vector2(controlAngle * _reflectCurve.Evaluate(Mathf.Abs(controlAngle)), -1).normalized;
-                    return Vector2.Reflect(_velocity, reflectAngle);
+                    return Vector2.Reflect(currentVelocity, reflectAngle);
                 }
                 else {
                     //use if reflectCurve isn't working
                     //Vector2 reflectAngle = new Vector2(-controlAngle * _controlDamp, -1).normalized;
 
                     Vector2 reflectAngle = new Vector2(-controlAngle * _reflectCurve.Evaluate(Mathf.Abs(controlAngle)), -1).normalized;
-                    return Vector2.Reflect(_velocity, reflectAngle);
+                    return Vector2.Reflect(currentVelocity, reflectAngle);
                 }
                 
             } else
@@ -182,54 +180,75 @@ namespace Assets.Scripts
             return randVelocity;
         }
 
-        private Vector2 PredictNextCollisionPoint(Vector2 currentPosition)
+        /// <summary>
+        /// A simple struct to hold data needed to predict the ball's future movements
+        /// </summary>
+        public struct BallPredictionData
         {
-            // Make a raycast in the direction that the ball is heading
-            var rayCast = Physics2D.Raycast(currentPosition, _velocity.normalized, Mathf.Infinity);
-
-            // Make sure the ray hit something
-            if (rayCast.collider != null)
-            {
-                // TODO use ball radius in calculations
-                Debug.Log("Ball will collide with " + rayCast.collider.gameObject.name + " Ball is currently " + rayCast.distance);
-
-                // Return the point where the ray hit an object
-                return rayCast.point;
-            }
-
-            return Vector2.zero;
+            public Vector2 collisionPoint;
+            public Vector2 newVelocity;
+            public GameObject willCollideWith;
         }
 
-        private Vector2 AiPaddlePredict()
+        /// <summary>
+        /// This method will return the ball's state after its next collision
+        /// </summary>
+        /// <param name="currentPosition">The current position of the ball</param>
+        /// <param name="currentVelocity">The current velocity of the ball</param>
+        /// <param name="maximumXValue">How far along the x axis can the ball go</param>
+        /// <returns>The position and velocity of the ball as well as what it will hit</returns>
+        public BallPredictionData PredictNextCollisionPoint(Vector2 currentPosition, Vector2 currentVelocity, float maximumXValue)
         {
+            // Make a raycast in the direction that the ball is heading
+            var rayCast = Physics2D.RaycastAll(currentPosition, currentVelocity.normalized, Mathf.Infinity);
 
-            Vector2 predictionPosition = transform.position;
-
-            for (int i = 0; i < 15; i++)
+            // Make sure the ray hit something
+            if (rayCast.Length > 0)
             {
-                predictionPosition = PredictNextCollisionPoint(predictionPosition);
+                // Loop once for each object in the ball's path
+                foreach (var ray in rayCast)
+                {
+                    // If the distance of the ray is more than 0.1 units
+                    if(ray.distance > 0.1f)
+                    {
+                        var data = new BallPredictionData();
 
-                if(Mathf.Abs(predictionPosition.x) > GoalBounds)
-                    break;
-            }
+                        // Subtract the radius of the ball
+                        data.collisionPoint = ray.point - (currentVelocity.normalized * GetComponent<CircleCollider2D>().radius);
 
-            // If the ball is heading towords the left paddle
-            if (_velocity.x < 0)
+                        // Calculate the new velocity after reflection
+                        data.newVelocity = ReflectVelocity(ray.collider.gameObject, currentVelocity) * -1;
+
+                        data.willCollideWith = ray.collider.gameObject;
+
+                        return data;
+                    }
+                }
+
+                return new BallPredictionData();
+
+            } else
             {
-                var test = MathUtils.LineIntersectXCoordinate(_velocity, -7f);
+                var data = new BallPredictionData();
 
-                return test;
+                // If the ball is going towords the left paddle
+                if(currentVelocity.x < 0)
+                {
+                    // Check where inside the paddle's range the ball will go
+                    data.collisionPoint = MathUtils.LineIntersectXCoordinate(currentVelocity, currentPosition, -maximumXValue);
+                }
+
+                // If the ball is going towords the right paddle
+                else if(currentVelocity.x > 0)
+                {
+                    // Check where inside the paddle's range the ball will go
+                    data.collisionPoint = MathUtils.LineIntersectXCoordinate(currentVelocity, currentPosition, maximumXValue);
+                }
+
+                data.newVelocity = currentVelocity;
+
+                return data;
             }
-
-            // If the ball is heading towords the right paddle
-            if (_velocity.x > 0)
-            {
-                var test = MathUtils.LineIntersectXCoordinate(_velocity, 7f);
-
-                return test;
-            }
-
-            return Vector2.zero;
         }
 
         /// <summary>

@@ -75,11 +75,10 @@ namespace Assets.Scripts
         /// <param name="lineDirection">The direction the line is pointing in</param>
         /// <param name="xCoordinate">The x coordinate to check for intersections</param>
         /// <returns>The point where these lines intersect</returns>
-        public static Vector2 LineIntersectXCoordinate(Vector2 lineDirection, float xCoordinate)
+        public static Vector2 LineIntersectXCoordinate(Vector2 lineDirection, Vector2 lineOriginPosition, float xCoordinate)
         {
-            // Create two line points from the line direction
-            Vector2 a1 = new Vector2(lineDirection.normalized.x * 1, lineDirection.normalized.y * 1);
-            Vector2 a2 = new Vector2(lineDirection.normalized.x * -1, lineDirection.normalized.y * -1);
+            Vector2 a1 = lineOriginPosition;
+            Vector2 a2 = lineOriginPosition + lineDirection * 20;
 
             // Create two line points from the X coordinate
             Vector2 b1 = new Vector2(xCoordinate, 1f);
@@ -99,6 +98,7 @@ namespace Assets.Scripts
         /// <returns>The point where two given lines intersect</returns>
         public static Vector2 LineIntersectionPoint(Vector2 a1, Vector2 b1, Vector2 a2, Vector2 b2)
         {
+
             // Get A,B,C of first line - points : a1 to b1
             float A1 = b1.y - a1.y;
             float B1 = a1.x - b1.x;
