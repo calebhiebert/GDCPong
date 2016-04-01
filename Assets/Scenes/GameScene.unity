@@ -190,6 +190,14 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 11472762, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
+      propertyPath: _predictionLayerMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 196262, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 473bdbfc6ef12b6418267ea62a671015, type: 2}
   m_IsPrefabParent: 0

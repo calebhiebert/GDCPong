@@ -69,6 +69,27 @@ namespace Assets.Scripts
         }
 
         /// <summary>
+        /// A helper method used for calculating ball trajectory
+        /// Takes a line direction (essentially a velocity) and a x coordinate, and returns where they intersect
+        /// </summary>
+        /// <param name="lineDirection">The direction the line is pointing in</param>
+        /// <param name="xCoordinate">The x coordinate to check for intersections</param>
+        /// <returns>The point where these lines intersect</returns>
+        public static Vector2 LineIntersectXCoordinate(Vector2 lineDirection, float xCoordinate)
+        {
+            // Create two line points from the line direction
+            Vector2 a1 = new Vector2(lineDirection.normalized.x * 1, lineDirection.normalized.y * 1);
+            Vector2 a2 = new Vector2(lineDirection.normalized.x * -1, lineDirection.normalized.y * -1);
+
+            // Create two line points from the X coordinate
+            Vector2 b1 = new Vector2(xCoordinate, 1f);
+            Vector2 b2 = new Vector2(xCoordinate, -1f);
+
+            // Calculate the intersection and return it
+            return LineIntersectionPoint(a1, a2, b1, b2);
+        }
+
+        /// <summary>
         /// Calculates the point where two lines intersect
         /// </summary>
         /// <param name="a1">Point A of line 1</param>

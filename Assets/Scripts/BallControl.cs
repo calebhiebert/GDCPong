@@ -106,6 +106,8 @@ namespace Assets.Scripts
                 if (OnScore != null)
                     OnScore(Direction.Right);
             }
+
+            PredictNextCollisionPoint(transform.position);
         }
 
         /// <summary>
@@ -178,6 +180,56 @@ namespace Assets.Scripts
             }
 
             return randVelocity;
+        }
+
+        private Vector2 PredictNextCollisionPoint(Vector2 currentPosition)
+        {
+            // Make a raycast in the direction that the ball is heading
+            var rayCast = Physics2D.Raycast(currentPosition, _velocity.normalized, Mathf.Infinity);
+
+            // Make sure the ray hit something
+            if (rayCast.collider != null)
+            {
+                // TODO use ball radius in calculations
+                Debug.Log("Ball will collide with " + rayCast.collider.gameObject.name + " Ball is currently " + rayCast.distance);
+
+                // Return the point where the ray hit an object
+                return rayCast.point;
+            }
+
+            return Vector2.zero;
+        }
+
+        private Vector2 AiPaddlePredict()
+        {
+
+            Vector2 predictionPosition = transform.position;
+
+            for (int i = 0; i < 15; i++)
+            {
+                predictionPosition = PredictNextCollisionPoint(predictionPosition);
+
+                if(Mathf.Abs(predictionPosition.x) > GoalBounds)
+                    break;
+            }
+
+            // If the ball is heading towords the left paddle
+            if (_velocity.x < 0)
+            {
+                var test = MathUtils.LineIntersectXCoordinate(_velocity, -7f);
+
+                return test;
+            }
+
+            // If the ball is heading towords the right paddle
+            if (_velocity.x > 0)
+            {
+                var test = MathUtils.LineIntersectXCoordinate(_velocity, 7f);
+
+                return test;
+            }
+
+            return Vector2.zero;
         }
 
         /// <summary>
