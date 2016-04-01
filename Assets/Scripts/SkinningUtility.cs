@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Assets.Scripts
 {
@@ -19,6 +21,7 @@ namespace Assets.Scripts
         /// </summary>
         public virtual void Start ()
         {
+            ForceClearSkin();
             ApplySkin(DefaultSkin);
         }
 
@@ -32,19 +35,46 @@ namespace Assets.Scripts
                 // If preview skin is checked, but the skin is not spawned
                 if (PreviewSkin && _appliedSkin == null)
                 {
-                    Debug.Log("Previewing skin for " + gameObject.name);
-
                     ApplySkin(DefaultSkin);
                 }
 
                 // If preview skin is not checked, but the skin is spawned
                 else if (!PreviewSkin && _appliedSkin != null)
                 {
-                    Debug.Log("Destroying preview for " + gameObject.name);
-
-                    DestroyImmediate(_appliedSkin);
+                    ForceClearSkin();
                 }
             }
+        }
+
+        /// <summary>
+        /// Will force delete any spawned skin objects
+        /// </summary>
+        public void ForceClearSkin()
+        {
+            if(Application.isEditor && !Application.isPlaying)
+            {
+                // This means we are in the editor so we have to use DestroyImmidiate instead of Destroy
+
+                List<Transform> childTransforms = GetComponentsInChildren<Transform>().Cast<Transform>().ToList<Transform>();
+
+                foreach (var child in childTransforms)
+                {
+                    if(child != null && child != transform)
+                        DestroyImmediate(child.gameObject);
+                }
+            }
+            else if (Application.isPlaying)
+            {
+                foreach (var item in gameObject.GetComponentsInChildren<Transform>())
+                {
+                    if (item != transform)
+                    {
+                        Destroy(item.gameObject);
+                    }
+                }
+            }
+
+            _appliedSkin = null;
         }
 
         /// <summary>
@@ -54,13 +84,14 @@ namespace Assets.Scripts
         /// <returns>The skin object that was spawned</returns>
         public virtual GameObject ApplySkin(GameObject skin)
         {
-            Debug.Log("Spawning skin for " + gameObject.name);
-
             // Spawn the skin
             var appliedSkin = Instantiate(skin);
 
             // Set the skin's parent to the current object, do not keep the world position
             appliedSkin.transform.SetParent(transform, false);
+
+            // Set the name to keep things neat in the unity editor
+            appliedSkin.name = skin.name;
 
             // set the applied skin
             _appliedSkin = appliedSkin;
